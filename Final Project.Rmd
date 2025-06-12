@@ -1,0 +1,940 @@
+---
+title: "Final Project:Investigating the effect of physical activity on telomere length among NHANES participants 1999-2001"
+author: "Meghana Sai Devineni"
+output: html_document
+---
+
+
+## Introduction
+
+Telomeres are specialized nucleoprotein structures located at the ends of chromosomes, consisting of repetitive DNA sequences (often ‘TTAGGG’ in humans) that protect the chromosome from deterioration and fusion with neighboring chromosomes[1]. With each cell division, telomeres naturally shorten due to the end-replication problem, eventually reaching a critical length that triggers cellular senescence or apoptosis[2]. Telomere length has emerged as a significant biomarker of biological aging, with shorter telomeres associated with increased risk for age-related diseases and mortality[3].
+The shortening of telomeres is influenced by various factors beyond chronological aging. Research has demonstrated that oxidative stress, inflammation, and behavioral factors such as smoking, poor diet, and psychological stress can accelerate telomere attrition. Conversely, certain lifestyle factors may slow this process or potentially contribute to telomere maintenance. Physical activity has been suggested as one such protective factor, though the relationship between exercise intensity and telomere biology remains incompletely understood.
+
+Several studies have explored the association between physical activity and telomere length with mixed results. Tucker (2017) found that highly active individuals had significantly longer telomeres than their sedentary counterparts, translating to a 9-year biological aging advantage[4]. Similarly, Loprinzi et al. (2016) reported a positive dose-response relationship between physical activity and telomere length in U.S. adults[5]. However, other studies have found no significant association or modest effects dependent on age, sex, or type of activity [6,7,8].
+The mechanisms through which physical activity may influence telomere biology include the reduction of oxidative stress and inflammation, regulation of telomerase activity (the enzyme responsible for adding telomeric repeats to chromosome ends), and mitochondrial biogenesis [9]. However, the differential impact of exercise intensity on these mechanisms remains unclear[10]. By analyzing the NHANES 2001-2002 dataset, which includes data on both physical activity intensity and telomere length, this study aims to contribute to our understanding of how different levels of physical exertion may influence cellular aging in a nationally representative sample of U.S. adults.
+This study addresses the health-related question: How does physical activity intensity (moderate versus vigorous) influence telomere length in U.S. adults? National Health and Nutrition Examination Survey (NHANES) data of adults aged 20-150 years, from year 2001-2002, representative of the non-institutionalized U.S. population was used. Physical activity intensity is categorized as moderate (activities like brisk walking, recreational swimming, or household chores: 3.0–5.9 METs) or vigorous (activities like running, swimming laps, or heavy yard work: ≥6.0 METs). The outcome variable, telomere length measured as the Mean T/S ratio (TeloMean), ranging from approximately 0.39 to 9.42, with higher values indicating longer telomeres. The telomere length of individuals who engage in moderate physical activity compared to those who engage in vigorous physical activity.
+
+
+### Dataset Description
+NHANES dataset from 2001-2002 was used for this analysis. NHANES is a program of studies designed to assess the health and nutritional status of adults and children in the United States through interviews and physical examinations. The survey is unique in that it combines interviews and physical examinations. For this study, we utilized data from the survey cycles: 2000-2001, specifically focusing on the telomere length measurements and physical activity assessments. The NHANES datasets are publicly available and can be downloaded from the Centers for Disease Control and Prevention (CDC) website. The telomere and physical activity data contain measurements for adults aged 20 years and older. The combination of these datasets provides a nationally representative sample of the non-institutionalized civilian population of the United States. For convenience, I used a CSV file where I combined the attributes SEQN (unique participant identifier), RIAGENDR (gender), RIDAGEYR (age in years), RIDRETH1 (race/ethnicity), DMDEDUC (education level), PADLEVEL (physical activity level), TELOMEAN (mean telomere length), BMXBMI (body mass index), PADMETS (physical activity metabolic equivalents), and PADDURAT (physical activity duration) from the questionnaire, demographic and examination sections of NHANES 2001-02 data I have included with this report.
+
+### Exposure and Outcome Variables
+The exposure variable in this study is physical activity intensity, measured through the PADLEVEL variable in the NHANES dataset. This variable categorizes reported activity into two levels: moderate (PADLEVEL=1) and vigorous (PADLEVEL=2). According to the NHANES documentation, these categories are based on the self-reported intensity level of various activities performed by participants.
+The outcome variable is telomere length, measured as the mean T/S ratio (TeloMean) in the telomere datasets. The T/S ratio represents the relative telomere length calculated as the ratio of telomere repeat copy number (T) to single gene copy number (S). In the NHANES dataset, TeloMean values range from approximately 0.39 to 9.42, with higher values indicating longer telomeres. These measurements were obtained from DNA extracted from whole blood samples of participants.
+
+### Hypothesis
+I  hypothesize that individuals who engage in vigorous physical activity will have longer telomere lengths compared to those who engage in moderate physical activity. This hypothesis is based on previous research suggesting that higher intensity exercise may provide greater protective effects against cellular aging. Specifically, vigorous physical activity may more effectively reduce oxidative stress and inflammation, two key factors implicated in telomere shortening. Additionally, vigorous activity may enhance telomerase activity, the enzyme responsible for maintaining telomere length. By analyzing the relationship between PADLEVEL and TeloMean, we aim to determine whether there is a significant association between physical activity intensity and telomere length in this nationally representative sample.
+
+### Potential Confounders
+Two potential confounders that are present in the NHANES dataset and may influence the relationship between physical activity intensity and telomere length are age and BMI. Age is a critical confounder because telomere length naturally decreases with age due to the end-replication problem during cell division. Simultaneously, aging is associated with decreases in physical activity and shifts from vigorous to more moderate forms of exercise. Without controlling for age, any observed relationship between physical activity and telomere length might simply reflect the underlying age distribution in different activity groups. This is particularly relevant in our dataset where vigorous exercisers are significantly younger (43 vs 47 years, p<0.001) than moderate exercisers. BMI is another important confounder because adiposity impacts both telomere dynamics and exercise patterns. Higher BMI is associated with increased oxidative stress and inflammation, which can accelerate telomere attrition. Simultaneously, individuals with higher BMI tend to engage in less vigorous physical activity due to physical limitations and reduced exercise capacity. Therefore, any observed association between physical activity intensity and telomere length could be partially explained by BMI differences across activity categories.
+
+Additionally, the measurement of physical activity intensity through self-reported questionnaires introduces potential measurement error. Participants' subjective interpretation of "moderate" versus "vigorous" activity may vary considerably based on fitness level, age, and other factors. What constitutes "vigorous" exertion for one individual may only represent "moderate" effort for another, particularly across different fitness levels. To address this limitation, we incorporated metabolic equivalent (MET) measures in our secondary analysis, which provide a more standardized physiological metric of exercise intensity. This approach helps mitigate the inherent subjectivity of questionnaire-based activity assessments and provides a more robust examination of the relationship between exercise intensity and telomere length. In this analysis, I will stratify by these confounders to examine whether the relationship between physical activity intensity and telomere length persists across different age groups and BMI categories.
+
+
+## Results
+
+### Participant Characteristics
+
+Table 1 presents key characteristics of the study population stratified by physical activity level. The analysis included a total of 2,389 participants from the NHANES 2001-2002 dataset, with 1,844 individuals (77.2%) engaging in moderate physical activity and 545 individuals (22.8%) engaging in vigorous physical activity. The mean telomere length was significantly higher in the vigorous activity group (1.12 kb, SD: 0.30) compared to the moderate activity group (1.06 kb, SD: 0.25) (p<0.001). Demographic differences between the two activity groups were notable. Participants in the vigorous activity group were significantly younger (mean age: 43 years vs. 47 years, p<0.001) and more likely to be male (59% vs. 48%, p<0.001). The racial/ethnic composition also differed significantly between groups (p<0.001), with the vigorous activity group having a higher proportion of Mexican Americans (27% vs. 16%) and a lower proportion of Non-Hispanic Whites (49% vs. 65%). Education levels also varied significantly between groups (p<0.001), with a higher percentage of individuals with less than high school education in the vigorous group (26% vs. 18%).
+
+Interestingly, BMI did not differ significantly between the two activity groups (27.9 kg/m² vs. 27.8 kg/m², p=0.2), suggesting that body composition was similar despite differences in activity intensity.
+
+## Unstratified Analysis
+
+The relationship between physical activity level and telomere length was first examined without stratification by confounders. Figure 1 presents a boxplot comparing telomere length between individuals reporting moderate versus vigorous physical activity. Participants engaging in vigorous physical activity demonstrated significantly longer telomere lengths compared to those engaging in moderate physical activity (p<0.001). The boxplot visualization reveals a clear upward shift in the distribution of telomere lengths in the vigorous activity group, with the median line positioned higher than in the moderate activity group. The interquartile range appears similar between groups, suggesting comparable variability in telomere length within both activity categories.The statistical analysis confirms this visual observation, with the t-test revealing a highly significant difference between groups. The extremely small p-value (p<0.001) indicates that the observed difference in telomere length between activity groups is very unlikely to have occurred by chance. This supports the hypothesis that higher intensity physical activity is associated with longer telomeres, which may reflect delayed cellular aging. These findings are particularly noteworthy given that the vigorous activity group had a mean telomere length approximately 5.7% longer than the moderate activity group (1.12 kb vs. 1.06 kb), representing a biologically meaningful difference in this marker of cellular aging.
+
+
+  
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(gt)
+library(gtsummary)
+
+# Load and clean data
+nhanes_data <- read.csv("cleaned_file.csv")
+
+# Ensure column names are valid and unique
+colnames(nhanes_data) <- make.names(colnames(nhanes_data), unique = TRUE)
+
+# Rename columns for clarity
+colnames(nhanes_data) <- c("ID", "Gender", "Age", "Ethnicity", "Education", 
+                           "Physical_Activity_Level", "Telomere_Mean", "BMI", "Physical_Activity_METS", "Physical_Duration")
+
+# Transform the data
+nhanes_data <- nhanes_data %>%
+  mutate(
+    Vigorous_Exercise = ifelse(Physical_Activity_Level == 2, "Yes", "No"),
+    # Convert categorical variables to factors with proper labels
+    
+    Gender = factor(Gender,
+                       levels = 1:2,
+                       labels = c("Male", "Female")),
+    Ethnicity = factor(Ethnicity,
+                       levels = 1:5,
+                       labels = c("Mexican American", "Other Hispanic", 
+                                  "Non-Hispanic White", "Non-Hispanic Black", 
+                                  "Other/Multiracial")),
+    Education = factor(Education,
+                       levels = 1:3,
+                       labels = c("Less Than High School", "High School Diploma",
+                                  "More Than High School"))
+  )
+
+# Create formatted table
+table1 <- nhanes_data %>%
+  tbl_summary(
+    by = Vigorous_Exercise,
+    include = c(Telomere_Mean, BMI, Age, Gender, Ethnicity, Education),
+    type = list(c(Age, BMI, Telomere_Mean) ~ "continuous"),
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    label = list(
+      Telomere_Mean ~ "Mean Telomere Length (kb)",
+      BMI ~ "Body Mass Index (kg/m²)",
+      Age ~ "Age (years)",
+      Gender ~ "Gender",
+      Ethnicity ~ "Race/Ethnicity",
+      Education ~ "Education Level"
+    )
+  ) %>%
+  add_p(
+    test = list(all_continuous() ~ "t.test",
+                all_categorical() ~ "chisq.test"),
+    pvalue_fun = function(x) style_pvalue(x, digits = 3)
+  ) %>%
+  modify_header(
+    label ~ "**Variable**",
+    stat_by = "**{level}**\nN = {n}",
+    p.value ~ "**p-value**"
+  ) %>%
+  modify_spanning_header(starts_with("stat_") ~ "**Vigorous Exercise**") %>%
+  modify_footnote(everything() ~ NA) %>%  # Remove footnotes
+  bold_labels()
+  
+
+table1_gt <- table1 %>% as_gt()
+
+# Save the table as an HTML file
+gtsave(table1_gt, file = "Table1_NHANES.html")
+
+
+```
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+
+
+</head>
+<body>
+<div id="lrfmusbhhp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+  <style>#lrfmusbhhp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lrfmusbhhp thead, #lrfmusbhhp tbody, #lrfmusbhhp tfoot, #lrfmusbhhp tr, #lrfmusbhhp td, #lrfmusbhhp th {
+  border-style: none;
+}
+
+#lrfmusbhhp p {
+  margin: 0;
+  padding: 0;
+}
+
+#lrfmusbhhp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lrfmusbhhp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lrfmusbhhp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lrfmusbhhp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lrfmusbhhp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lrfmusbhhp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lrfmusbhhp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lrfmusbhhp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lrfmusbhhp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lrfmusbhhp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lrfmusbhhp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lrfmusbhhp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lrfmusbhhp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lrfmusbhhp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lrfmusbhhp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lrfmusbhhp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lrfmusbhhp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lrfmusbhhp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lrfmusbhhp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lrfmusbhhp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lrfmusbhhp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lrfmusbhhp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lrfmusbhhp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lrfmusbhhp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lrfmusbhhp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lrfmusbhhp .gt_left {
+  text-align: left;
+}
+
+#lrfmusbhhp .gt_center {
+  text-align: center;
+}
+
+#lrfmusbhhp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lrfmusbhhp .gt_font_normal {
+  font-weight: normal;
+}
+
+#lrfmusbhhp .gt_font_bold {
+  font-weight: bold;
+}
+
+#lrfmusbhhp .gt_font_italic {
+  font-style: italic;
+}
+
+#lrfmusbhhp .gt_super {
+  font-size: 65%;
+}
+
+#lrfmusbhhp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lrfmusbhhp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lrfmusbhhp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lrfmusbhhp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lrfmusbhhp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lrfmusbhhp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lrfmusbhhp .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#lrfmusbhhp .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#lrfmusbhhp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+  <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="label"><span class='gt_from_md'><strong>Variable</strong></span></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup" id="level 1; stat_1">
+        <div class="gt_column_spanner"><span class='gt_from_md'><strong>Vigorous Exercise</strong></span></div>
+      </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col" id="p.value"><span class='gt_from_md'><strong>p-value</strong></span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span></th>
+    </tr>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_1"><span class='gt_from_md'><strong>No</strong><br />
+N = 1,844</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="stat_2"><span class='gt_from_md'><strong>Yes</strong><br />
+N = 545</span><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Mean Telomere Length (kb)</td>
+<td headers="stat_1" class="gt_row gt_center">1.06 (0.25)</td>
+<td headers="stat_2" class="gt_row gt_center">1.12 (0.30)</td>
+<td headers="p.value" class="gt_row gt_center" style="font-weight: bold;"><0.001**</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Body Mass Index (kg/m²)</td>
+<td headers="stat_1" class="gt_row gt_center">27.8 (5.9)</td>
+<td headers="stat_2" class="gt_row gt_center">27.9 (5.4)</td>
+<td headers="p.value" class="gt_row gt_center">0.2</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Age (years)</td>
+<td headers="stat_1" class="gt_row gt_center">47 (18)</td>
+<td headers="stat_2" class="gt_row gt_center">43 (17)</td>
+<td headers="p.value" class="gt_row gt_center" style="font-weight: bold;"><0.001**</td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Gender</td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center" style="font-weight: bold;"><0.001**</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Male</td>
+<td headers="stat_1" class="gt_row gt_center">882 (48%)</td>
+<td headers="stat_2" class="gt_row gt_center">320 (59%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Female</td>
+<td headers="stat_1" class="gt_row gt_center">962 (52%)</td>
+<td headers="stat_2" class="gt_row gt_center">225 (41%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Race/Ethnicity</td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center" style="font-weight: bold;"><0.001**</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Mexican American</td>
+<td headers="stat_1" class="gt_row gt_center">288 (16%)</td>
+<td headers="stat_2" class="gt_row gt_center">146 (27%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Other Hispanic</td>
+<td headers="stat_1" class="gt_row gt_center">59 (3.2%)</td>
+<td headers="stat_2" class="gt_row gt_center">29 (5.3%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Non-Hispanic White</td>
+<td headers="stat_1" class="gt_row gt_center">1,194 (65%)</td>
+<td headers="stat_2" class="gt_row gt_center">266 (49%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Non-Hispanic Black</td>
+<td headers="stat_1" class="gt_row gt_center">240 (13%)</td>
+<td headers="stat_2" class="gt_row gt_center">90 (17%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Other/Multiracial</td>
+<td headers="stat_1" class="gt_row gt_center">63 (3.4%)</td>
+<td headers="stat_2" class="gt_row gt_center">14 (2.6%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left" style="font-weight: bold;">Education Level</td>
+<td headers="stat_1" class="gt_row gt_center"><br /></td>
+<td headers="stat_2" class="gt_row gt_center"><br /></td>
+<td headers="p.value" class="gt_row gt_center" style="font-weight: bold;"><0.001**</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    Less Than High School</td>
+<td headers="stat_1" class="gt_row gt_center">325 (18%)</td>
+<td headers="stat_2" class="gt_row gt_center">139 (26%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    High School Diploma</td>
+<td headers="stat_1" class="gt_row gt_center">435 (24%)</td>
+<td headers="stat_2" class="gt_row gt_center">105 (19%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">    More Than High School</td>
+<td headers="stat_1" class="gt_row gt_center">1,084 (59%)</td>
+<td headers="stat_2" class="gt_row gt_center">301 (55%)</td>
+<td headers="p.value" class="gt_row gt_center"><br /></td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>1</sup></span> <span class='gt_from_md'>Mean (SD); n (%)</span></td>
+    </tr>
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;line-height:0;"><sup>2</sup></span> <span class='gt_from_md'>** p&lt;0.001, * p&lt;0.05</span></td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</body>
+</html>
+
+
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tableone)
+library(knitr)
+library(tidyr)
+
+# Read the dataset
+nhanes_data <- read.csv("cleaned_file.csv")
+
+# Clean and prepare the dataset
+nhanes_cleaned <- nhanes_data %>%
+  select(SEQN, TELOMEAN, BMXBMI, PADLEVEL, PADDURAT, PADMETS, RIAGENDR, RIDAGEYR, RIDRETH1, DMDEDUC) %>%
+  filter(!is.na(TELOMEAN), !is.na(PADLEVEL))
+
+# Create factors and categorized variables for analysis
+nhanes_cleaned <- nhanes_cleaned %>%
+  mutate(
+    ActivityLevel = factor(PADLEVEL, levels = c(1, 2), labels = c("Moderate", "Vigorous")),
+    Gender = factor(RIAGENDR, levels = c(1, 2), labels = c("Male", "Female")),
+    Race = factor(RIDRETH1, levels = 1:5, labels = c("Mexican American", "Other Hispanic", "Non-Hispanic White", "Non-Hispanic Black", "Other Race")),
+    Education = factor(DMDEDUC, levels = 1:3, labels = c("Less Than High School", "High School Diploma", "More Than High School")),
+    
+    # Create categories for confounders
+    AgeCategory = cut(RIDAGEYR, 
+                      breaks = c(0, 30, 50, 70, Inf), 
+                      labels = c("18-30", "31-50", "51-70", "71+")),
+    
+    BMICategory = cut(BMXBMI, 
+                      breaks = c(0, 18.5, 25, 30, Inf), 
+                      labels = c("Underweight", "Normal", "Overweight", "Obese"))
+  )
+
+
+
+# --------------------
+# Unstratified Analysis
+# --------------------
+# Boxplot of telomere length by activity level
+p1 <- ggplot(nhanes_cleaned, aes(x = ActivityLevel, y = TELOMEAN, fill = ActivityLevel)) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.2, color = "darkgray") +
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Statistical test
+t_test_result <- t.test(TELOMEAN ~ ActivityLevel, data = nhanes_cleaned)
+
+# Linear regression model
+lm_model <- lm(TELOMEAN ~ ActivityLevel, data = nhanes_cleaned)
+lm_summary <- summary(lm_model)
+
+# Add annotation with p-value to the plot
+p1 <- p1 + annotate(
+  "text", 
+  x = 1.5, 
+  y = max(nhanes_cleaned$TELOMEAN, na.rm = TRUE) * 0.95,
+  label = paste("p-value =", format.pval(t_test_result$p.value, digits = 3)),
+  size = 4
+)
+
+# --------------------
+# Stratified Analysis by Confounder 1: Age Category
+# --------------------
+p2 <- ggplot(nhanes_cleaned, aes(x = ActivityLevel, y = TELOMEAN, fill = ActivityLevel)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ AgeCategory, scales = "free_y") +
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level Stratified by Age",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# --------------------
+# Stratified Analysis by Confounder 2: BMI Category
+# --------------------
+p3 <- ggplot(nhanes_cleaned, aes(x = ActivityLevel, y = TELOMEAN, fill = ActivityLevel)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ BMICategory, scales = "free_y") +
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level Stratified by BMI",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Display plots
+print(p1)
+print(p2)
+print(p3)
+
+# Display statistical results
+cat("\nT-test Results:\n")
+print(t_test_result)
+
+cat("\nLinear Regression Results:\n")
+print(lm_summary)
+
+# Save plots
+ggsave("boxplot_unstratified.png", p1, width = 8, height = 6)
+ggsave("boxplot_by_age.png", p2, width = 10, height = 6)
+ggsave("boxplot_by_bmi.png", p3, width = 10, height = 6)
+
+```
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tableone)
+
+# Load the cleaned dataset
+data <- read.csv("cleaned_file.csv")
+
+# Convert PADLEVEL to a factor for better interpretation
+data <- data %>%
+  mutate(
+    PADLEVEL = factor(PADLEVEL, levels = c(1, 2), labels = c("Moderate", "Vigorous")),
+    DurationCategory = cut(PADDURAT, breaks = c(0, 30, 60, Inf), 
+                           labels = c("Short (<30 min)", "Medium (30-60 min)", "Long (>60 min)"),
+                           include.lowest = TRUE),
+    METCategory = cut(PADMETS, breaks = c(0, 5, 8, Inf), 
+                      labels = c("Low (<5 METs)", "Medium (5-8 METs)", "High (>8 METs)"),
+                      include.lowest = TRUE)
+  )
+
+# --------------------
+# Table 1: Key Characteristics
+# --------------------
+table1_vars <- c("TELOMEAN", "BMXBMI", "PADLEVEL", "PADDURAT", "PADMETS", "RIAGENDR", "RIDAGEYR", "RIDRETH1", "DMDEDUC")
+cat_vars <- c("PADLEVEL", "RIAGENDR", "RIDRETH1", "DMDEDUC")
+
+table1 <- CreateTableOne(vars = table1_vars, factorVars = cat_vars, data = data)
+
+# Print Table 1
+print(table1, showAllLevels = TRUE)
+
+# --------------------
+# Unstratified Analysis
+# --------------------
+# Boxplot of telomere length by physical activity level
+p1 <- ggplot(data, aes(x = PADLEVEL, y = TELOMEAN, fill = PADLEVEL)) +
+  geom_boxplot(alpha = 0.7) +
+  
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal()
+
+print(p1)
+
+# Perform a t-test to assess differences in telomere length between groups
+t_test_result <- t.test(TELOMEAN ~ PADLEVEL, data = data)
+print(t_test_result)
+
+# Linear regression model
+lm_model <- lm(TELOMEAN ~ PADLEVEL + BMXBMI + RIDAGEYR + RIAGENDR + RIDRETH1 + DMDEDUC, data = data)
+summary(lm_model)
+
+# --------------------
+# Stratified Analysis by Confounder 1: Activity Duration
+# --------------------
+p2 <- ggplot(data, aes(x = PADLEVEL, y = TELOMEAN, fill = PADLEVEL)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ DurationCategory) +
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level Stratified by Activity Duration",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal()
+
+print(p2)
+
+# --------------------
+# Stratified Analysis by Confounder 2: MET Category
+# --------------------
+p3 <- ggplot(data, aes(x = PADLEVEL, y = TELOMEAN, fill = PADLEVEL)) +
+  geom_boxplot(alpha = 0.7) +
+  facet_wrap(~ METCategory) +
+  scale_fill_manual(values = c("Moderate" = "#69b3a2", "Vigorous" = "#404080")) +
+  labs(
+    title = "Telomere Length by Physical Activity Level Stratified by MET Category",
+    x = "Physical Activity Level",
+    y = "Telomere Length (Mean T/S ratio)"
+  ) +
+  theme_minimal()
+
+print(p3)
+
+# Save plots as PNG files
+ggsave("boxplot_unstratified.png", p1, width = 8, height = 6)
+ggsave("boxplot_by_duration.png", p2, width = 10, height = 6)
+ggsave("boxplot_by_mets.png", p3, width = 10, height = 6)
+
+```
+
+
+## Unstratified Analysis
+
+The relationship between physical activity intensity (exposure) and telomere length (outcome) was first examined without stratification by confounders. Figure 1 presents a boxplot comparing telomere length between individuals reporting moderate versus vigorous physical activity. Participants engaging in vigorous physical activity demonstrated significantly longer telomere lengths compared to those engaging in moderate physical activity (1.12 kb vs. 1.06 kb, p<0.001). The boxplot visualization reveals a clear upward shift in the distribution of telomere lengths in the vigorous activity group, with the median line positioned higher than in the moderate activity group. The statistical analysis confirms this visual observation. The t-test revealed a highly significant difference between groups (p<0.001), indicating that the observed difference in telomere length between activity groups is very unlikely to have occurred by chance. This supports the hypothesis that higher intensity physical activity is associated with longer telomeres, which may reflect delayed cellular aging. These findings are particularly noteworthy given that the vigorous activity group had a mean telomere length approximately 5.7% longer than the moderate activity group (1.12 kb vs. 1.06 kb), representing a biologically meaningful difference in this marker of cellular aging.
+
+## Stratified Analysis (Confounder 1: Age)
+
+When stratifying by age categories (18-30, 31-50, 51-70, and 71+ years), the relationship between physical activity intensity and telomere length shows interesting patterns across different age groups. As shown in Figure 2, the association between vigorous physical activity and longer telomere length is most pronounced in younger age groups and gradually diminishes with advancing age. In the 18-30 age group, there is a substantial difference in telomere length between vigorous and moderate exercisers, with the vigorous group showing notably longer telomeres. This difference remains visible but becomes progressively smaller in the 31-50 and 51-70 age groups. By the 71+ age category, the difference in telomere length between activity levels is minimal. This age-stratified analysis suggests that the potential protective effect of vigorous physical activity on telomere length may be age-dependent, with younger individuals potentially benefiting more from high-intensity exercise. This could indicate that starting vigorous physical activity earlier in life might have greater cellular aging benefits, or alternatively, that the cumulative effects of other age-related factors may eventually outweigh the benefits of exercise intensity in older adults.
+
+## Stratified Analysis (Confounder 2: BMI)
+
+When stratifying by BMI categories (Underweight, Normal, Overweight, and Obese), the relationship between physical activity intensity and telomere length shows varying patterns across different body composition groups. As illustrated in Figure 3, the association between vigorous physical activity and telomere length appears strongest in the underweight category, where there is a substantial difference between activity levels. In the normal weight category, the difference in telomere length between vigorous and moderate exercisers is still visible but less pronounced than in the underweight group. The overweight category shows an even smaller difference, while in the obese category, the telomere length distributions between vigorous and moderate exercisers appear quite similar. This BMI-stratified analysis suggests that body composition may modify the relationship between exercise intensity and cellular aging markers. The diminishing association with increasing BMI could indicate that excess adiposity might attenuate the potential benefits of vigorous exercise on telomere maintenance, possibly through increased inflammation or oxidative stress associated with higher BMI.
+
+## Discussion
+
+### Summary of Results
+
+This analysis of NHANES 2001-2002 data reveals a significant positive association between vigorous physical activity and telomere length in U.S. adults. The unstratified analysis showed that individuals engaging in vigorous physical activity had approximately 5.7% longer telomeres than those reporting moderate physical activity (1.12 kb vs. 1.06 kb, p<0.001). However, stratified analyses revealed important effect modifications by both age and BMI.
+
+The age-stratified analysis demonstrated that the relationship between vigorous activity and telomere length was strongest in younger adults (18-30 years) and progressively weakened with advancing age, becoming minimal in those over 70 years. Similarly, the BMI-stratified analysis showed that the association was most pronounced in underweight individuals and diminished across increasing BMI categories, with obese participants showing little difference in telomere length between activity levels.
+
+### Contribution to Current Knowledge
+
+These findings extend the current understanding of exercise-telomere relationships in several important ways. First, while previous research has established associations between physical activity and telomere length, our results specifically highlight the importance of exercise intensity, suggesting that vigorous activity may confer greater cellular aging benefits than moderate activity.
+
+Second, our identification of age and BMI as effect modifiers helps explain inconsistencies in previous literature. Studies focusing on older or more overweight populations may have underestimated the potential benefits of vigorous exercise on telomere maintenance due to these attenuating factors.
+
+Third, the observed gradient of diminishing returns across age groups suggests a potential "window of opportunity" for exercise interventions aimed at cellular aging, with earlier intervention potentially yielding greater benefits.
+
+### Limitations
+
+Several limitations should be considered when interpreting these results. First, the cross-sectional design precludes causal inference; we cannot determine whether vigorous exercise leads to longer telomeres or whether individuals with inherently longer telomeres are more capable of engaging in vigorous activity.
+
+Second, physical activity was self-reported, introducing potential recall bias and misclassification. The subjective nature of "moderate" versus "vigorous" categorization may vary between individuals with different fitness levels or demographic characteristics.
+
+Third, while we controlled for age and BMI, residual confounding from unmeasured variables remains possible. Factors such as diet, stress, sleep quality, and socioeconomic status—all known to affect telomere dynamics—were not fully accounted for in our analysis.
+
+Finally, telomere length was measured at a single time point, preventing assessment of telomere attrition rates, which may be more informative than absolute length for understanding aging processes.
+
+### Implications
+
+These findings have several important implications for public health, clinical practice, and future research. For public health officials and policy makers, our results suggest that physical activity guidelines might benefit from emphasizing not just the quantity but also the intensity of exercise, particularly for younger adults where the cellular aging benefits appear most pronounced. For clinicians, these findings highlight the potential value of recommending vigorous exercise to patients concerned about healthy aging, while recognizing that recommendations may need to be tailored based on age and BMI. For researchers, our results underscore the importance of considering effect modification in exercise-aging studies and suggest that future longitudinal research should examine whether initiating vigorous exercise at younger ages produces sustained telomere maintenance benefits over time.
+
+## Conclusions
+
+In answer to our specific health-related question—whether vigorous physical activity is associated with longer telomere length compared to moderate physical activity in U.S. adults—our analysis suggests that yes, vigorous physical activity is associated with significantly longer telomeres, but this relationship is strongly moderated by both age and BMI. The unstratified analysis showed a clear positive association between vigorous exercise and telomere length. However, the stratified analyses revealed that this relationship is not uniform across all population subgroups. The benefits appear greatest in younger adults and those with lower BMI, suggesting that the anti-aging effects of vigorous exercise may be most potent when started early in life and in the absence of excess adiposity. These findings suggest that while vigorous physical activity may indeed help maintain telomere length—a key marker of cellular aging—the magnitude of this benefit likely depends on individual characteristics and timing of intervention. Future longitudinal studies are needed to determine whether these cross-sectional associations reflect causal relationships and whether early-life exercise interventions can produce lasting effects on biological aging trajectories.
+
+
